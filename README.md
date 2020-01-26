@@ -1,4 +1,4 @@
-# Econ 722 - Spring 2020
+# Econ 722 - Spring 2020 - Prof. Schorfheide
 ## Introduction to Bayesian Inference
 ### PS1 - problem 1
 
