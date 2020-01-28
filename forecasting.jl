@@ -6,7 +6,7 @@
 # Fan chart plot
 # -----------------------------------------------------------------------------
 
-module TSplot
+module forecast
 
 export fanChart
 
