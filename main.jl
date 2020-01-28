@@ -21,6 +21,9 @@ using .simul
 include("DS.jl")
 using .DS
 
+include("fanChart.jl")
+using .TSplot
+
 # --------------------
 # 1. AR(1) simulation
 # --------------------
@@ -46,14 +49,23 @@ savefig(pNoiseAR, "/Users/Castesil/Documents/EUI/Year II - PENN/Spring 2020/Econ
 # Initilize
 N_run = 100                 # number of times the algorithm is run
 N = [10,100,1000,10000]     # number of draws
-τ = 0.25                    # prior precision
+τ_diffuse = 1000            # prior precision (diffuse)
+τ_concentrate = 0.001       # prior precision (concentrated)
+flag = "concentrate"        # "concentrate" or "diffuse"
 
 # Analytical solution - posterior
 Y = y[2:T+1]
 X = y[1:T]
 
-posteriorMean = (X'*X + τ^(-2))^(-1) * (X'*Y)
-posteriorVariance = (X'*X + τ^(-2))^(-1)
+if flag == "concentrate"
+    τ = τ_concentrate
+elseif flag == "diffuse"
+    τ = τ_diffuse
+end
+
+posteriorMean = inv(X'*X + τ^(-2)) * (X'*Y)
+posteriorVariance = inv(X'*X + τ^(-2))
+
 
 # Algorithm
 vMeanMC = Float64[]
@@ -91,3 +103,22 @@ for iDraws in 1:length(N)
     global vSqVarianceMC = push!(vSqVarianceMC, mcSqVar)
 
 end
+
+plot(N, vVarianceMC, marker=:o, markercolor=:white, linecolor=:black, label="", xlabel = "number of draws", ylabel = "sampling variance")
+
+# ---------------
+# 3. Forecasting
+# ---------------
+
+
+#=
+# Example FanChart
+nMC = 1000
+yMC = zeros(T,nMC)
+for iMC in 1:nMC
+    yMC[:,iMC], u = simul.AR1(ϕ,T,y_0)
+end
+
+p1 = TSplot.fanChart(1:100, yMC)
+plot(p1)
+=#
