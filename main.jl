@@ -130,15 +130,21 @@ x_ss, y_ss = QuantEcon.simulate(ar, T)
 # Graphs
 plot(dropdims(y_ss, dims = 1), color = :black, xlabel="Number of simulations", label = L"y_t = \phi y_{t-1} + u_t")
 
-
-#=
 # Example FanChart
 nMC = 1000
 yMC = zeros(T,nMC)
+yMC_ss = zeros(T,nMC)
+
 for iMC in 1:nMC
-    yMC[:,iMC], u = simul.AR1(ϕ,T,y_0)
+
+    # simple
+    yMC[:,iMC], u = simul.AR1(ϕ1,T,y_0)
+
+    # state space rep.
+    x, y_mc = QuantEcon.simulate(ar,T)
+    yMC_ss[:,iMC] = dropdims(y_mc, dims=1)
+
 end
 
-p1 = forecast.fanChart(1:100, yMC)
-plot(p1)
-=#
+p1 = forecast.fanChart(1:100, yMC_ss)
+p2 = forecast.fanChart(1:100, yMC)
