@@ -9,7 +9,8 @@
 # ---------
 # Packages
 # ---------
-using Distributions
+using Distributions, Random, LinearAlgebra
+using QuantEcon
 using Plots, LaTeXStrings
 
 # --------
@@ -21,19 +22,22 @@ using .simul
 include("DS.jl")
 using .DS
 
-include("fanChart.jl")
-using .TSplot
+include("forecasting.jl")
+using .forecast
 
 # --------------------
 # 1. AR(1) simulation
 # --------------------
+Random.seed!(100) # For deterministic results
+
+# 1.1. Normal form
 # Initilize
 y_0 = 0
-ϕ = 0.95
+ϕ1 = 0.95
 T = 100
 
 # Simulate
-y, u = simul.AR1(ϕ, T+1, y_0)
+y, u = simul.AR1(ϕ1, T+1, y_0)
 
 # Graphs
 pSimulationAR = plot(1:T+1,y, linecolor=:black, xlabel="Number of simulations", label=L"y_t = \phi y_{t-1} + u_t", legend=:best)
@@ -41,7 +45,6 @@ savefig(pSimulationAR, "/Users/Castesil/Documents/EUI/Year II - PENN/Spring 2020
 
 pNoiseAR = plot(1:T+1, u, linecolor=:black, xlabel="Number of simulations", label=L"u_t", legend=:best)
 savefig(pNoiseAR, "/Users/Castesil/Documents/EUI/Year II - PENN/Spring 2020/Econometrics IV/PS/PS1/LaTeX/pNoiseAR.pdf")
-
 
 # -------------------
 # 2. Direct sampling
@@ -109,6 +112,23 @@ plot(N, vVarianceMC, marker=:o, markercolor=:white, linecolor=:black, label="", 
 # ---------------
 # 3. Forecasting
 # ---------------
+# 3.1. State space representation of AR(1)
+# Parameters
+ϕ0 = 0.0
+ϕ1 = 0.95
+σ = 1.0
+
+# Primitives
+A = [ϕ0 ϕ1; 1.0 0.0]
+C = [σ ; 0.0]
+G = [1.0 0.0]
+
+# Definition & simulation
+ar = QuantEcon.LSS(A,C,G; mu_0=zeros(2))
+x_ss, y_ss = QuantEcon.simulate(ar, T)
+
+# Graphs
+plot(dropdims(y_ss, dims = 1), color = :black, xlabel="Number of simulations", label = L"y_t = \phi y_{t-1} + u_t")
 
 
 #=
@@ -119,6 +139,6 @@ for iMC in 1:nMC
     yMC[:,iMC], u = simul.AR1(ϕ,T,y_0)
 end
 
-p1 = TSplot.fanChart(1:100, yMC)
+p1 = forecast.fanChart(1:100, yMC)
 plot(p1)
 =#
