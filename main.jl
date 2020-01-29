@@ -54,14 +54,14 @@ N_run = 100                 # number of times the algorithm is run
 N = [10,100,1000,10000]     # number of draws
 τ_diffuse = 1000            # prior precision (diffuse)
 τ_concentrate = 0.001       # prior precision (concentrated)
-flag = "concentrate"        # "concentrate" or "diffuse"
+flag = "concentrate"        # "tight" or "diffuse"
 
 # Analytical solution - posterior
 Y = y[2:T+1]
 X = y[1:T]
 
-if flag == "concentrate"
-    τ = τ_concentrate
+if flag == "tight"
+    τ = τ_tight
 elseif flag == "diffuse"
     τ = τ_diffuse
 end
