@@ -51,10 +51,10 @@ savefig(pNoiseAR, "/Users/Castesil/Documents/EUI/Year II - PENN/Spring 2020/Econ
 # -------------------
 # Initilize
 N_run = 100                 # number of times the algorithm is run
-N = [10,100,1000,10000]     # number of draws
-τ_diffuse = 1000            # prior precision (diffuse)
-τ_concentrate = 0.001       # prior precision (concentrated)
-flag = "concentrate"        # "tight" or "diffuse"
+N = [10,100,500,1000]       # number of draws
+τ_diffuse = 100             # prior precision (diffuse)
+τ_tight = 0.01              # prior precision (concentrated)
+flag = "diffuse"            # "tight" or "diffuse"
 
 # Analytical solution - posterior
 Y = y[2:T+1]
@@ -109,6 +109,7 @@ end
 
 plot(N, vVarianceMC, marker=:o, markercolor=:white, linecolor=:black, label="", xlabel = "number of draws", ylabel = "sampling variance")
 
+#=
 # ---------------
 # 3. Forecasting
 # ---------------
@@ -148,3 +149,4 @@ end
 
 p1 = forecast.fanChart(1:100, yMC_ss)
 p2 = forecast.fanChart(1:100, yMC)
+=#

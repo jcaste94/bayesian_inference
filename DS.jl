@@ -21,7 +21,7 @@ using Distributions
 function posterior_approx(posteriorMean::Real, posteriorVariance::Real, N::Integer)
 
     # 1. draws from posterior distribution
-    d = Normal(posteriorMean, posteriorVariance)
+    d = Normal(posteriorMean, sqrt(posteriorVariance))
     θ = rand(d, N)
 
     # 2. MC approximation of E[θ|Y] and E[θ^2|Y]
