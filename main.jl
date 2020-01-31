@@ -109,44 +109,22 @@ end
 
 plot(N, vVarianceMC, marker=:o, markercolor=:white, linecolor=:black, label="", xlabel = "number of draws", ylabel = "sampling variance")
 
-#=
+
 # ---------------
 # 3. Forecasting
 # ---------------
-# 3.1. State space representation of AR(1)
-# Parameters
-ϕ0 = 0.0
-ϕ1 = 0.95
-σ = 1.0
+# Housekeeping
+nMC = 1000      # number of Monte Carlo simulations
+h = 50          # number of forcecating periods
+y_hist = y      # historic data a.k.a. simulated data
+yMC = zeros(T+h+1, nMC)
 
-# Primitives
-A = [ϕ0 ϕ1; 1.0 0.0]
-C = [σ ; 0.0]
-G = [1.0 0.0]
 
-# Definition & simulation
-ar = QuantEcon.LSS(A,C,G; mu_0=zeros(2))
-x_ss, y_ss = QuantEcon.simulate(ar, T)
-
-# Graphs
-plot(dropdims(y_ss, dims = 1), color = :black, xlabel="Number of simulations", label = L"y_t = \phi y_{t-1} + u_t")
-
-# Example FanChart
-nMC = 1000
-yMC = zeros(T,nMC)
-yMC_ss = zeros(T,nMC)
-
+# Monte Carlo
 for iMC in 1:nMC
-
-    # simple
-    yMC[:,iMC], u = simul.AR1(ϕ1,T,y_0)
-
-    # state space rep.
-    x, y_mc = QuantEcon.simulate(ar,T)
-    yMC_ss[:,iMC] = dropdims(y_mc, dims=1)
-
+    y_f = forecast.h_step(y_hist, h, posteriorMean, posteriorVariance)
+    yMC[:,iMC] = [y_hist; y_f]
 end
 
-p1 = forecast.fanChart(1:100, yMC_ss)
-p2 = forecast.fanChart(1:100, yMC)
-=#
+pForecastChart = forecast.fanChart(yMC, T+1, h)
+savefig(pForecastChart, "/Users/Castesil/Documents/EUI/Year II - PENN/Spring 2020/Econometrics IV/PS/PS1/LaTeX/pForecastChart.pdf")
